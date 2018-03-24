@@ -24,6 +24,12 @@ export function getRandomNumBetween(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+export function getRandomNumNear(number, offset) {
+  const min = number - offset;
+  const max = number + offset;
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 export function removeRandomFromArray(arr) {
   const randomNum = getRandomNum(arr.length - 1);
   return arr.splice(randomNum, 1)[0];
@@ -45,13 +51,15 @@ export function increaseVolume(player, increment) {
   player.setVolume(currentVolume + increment);
 }
 
-export function fadeOut(player) {
+export function fadeOut(player, duration) {
   return new Promise((resolve) => {
+    const volume = player.getVolume();
+    const toLowerIncrement = Math.floor(volume / duration);
     let incremented = 0;
     const timer = setInterval(() => {
-      lowerVolume(player, 10);
+      lowerVolume(player, toLowerIncrement);
       incremented += 1;
-      if (incremented > 8) {
+      if (incremented > duration) {
         clearInterval(timer);
         resolve();
       }
@@ -59,16 +67,27 @@ export function fadeOut(player) {
   });
 }
 
-export function fadeIn(player) {
+export function fadeIn(player, duration, volume) {
   return new Promise((resolve) => {
+    const toRaiseIncrement = Math.floor(volume / duration);
     let incremented = 0;
     const timer = setInterval(() => {
-      increaseVolume(player, 10);
+      increaseVolume(player, toRaiseIncrement);
       incremented += 1;
-      if (incremented > 8) {
+      if (incremented > duration) {
         clearInterval(timer);
         resolve();
       }
     }, 1000);
   });
+}
+
+export function getParameterByName(name) {
+  const url = window.location.href;
+  const convertedName = name.replace(/[\[\]]/g, '\\$&');
+  const regex = new RegExp("[?&]" + convertedName + "(=([^&#]*)|&|#|$)");
+  const results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }

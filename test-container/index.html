@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+    }
+    #container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #controls {
+      background: lightgrey;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      padding: 5px;
+      z-index: 99;
+    }
+    #control {
+      display: flex;
+    }
+    #content {
+      border: none;
+      width: 100vw;
+      height: 100%;
+    }
+    @media screen and (max-device-width: 600px) {
+      #content {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="controls">
+      <div class="control">
+        <label for="numberOfVids"># of vids</label>
+        <input id="numberOfVids" type="number" min="1" max="16" value="16">
+      </div>
+      <div class="control">
+        <label for="avgTimeDelay">avg time delay (seconds)</label>
+        <input id="avgTimeDelay" type="number" min="10" value="40">
+      </div>
+      <div class="control">
+        <label for="relaxMinVol">relaxation min volume</label>
+        <input id="relaxMinVol" type="number" min="0" max="100" value="70">
+      </div>
+      <div class="control">
+        <label for="relaxMaxVol">relaxation max volume</label>
+        <input id="relaxMaxVol" type="number" min="0" max="100" value="80">
+      </div>
+      <div class="control">
+        <label for="natureMinVol">nature min volume</label>
+        <input id="natureMinVol" type="number" min="0" max="100" value="70">
+      </div>
+      <div class="control">
+        <label for="natureMaxVol">nature max volume</label>
+        <input id="natureMaxVol" type="number" min="0" max="100" value="80">
+      </div>
+      <div class="control">
+        <label for="meditationMinVol">meditation min volume</label>
+        <input id="meditationMinVol" type="number" min="0" max="100" value="50">
+      </div>
+      <div class="control">
+        <label for="meditationMaxVol">meditation max volume</label>
+        <input id="meditationMaxVol" type="number" min="0" max="100" value="60">
+      </div>
+      <div class="control">
+        <label for="backgroundSpeed">background speed</label> (10 - 100) higher is worse for performance
+        <input id="backgroundSpeed" type="number" value="30" min="10" max="100">
+      </div>
+      <div class="control">
+        <label for="titleSpeed">background duration</label> (100 - 1000)
+        <input id="titleSpeed" type="number" value="600" min="100" max="1000">
+      </div>
+      <div class="control">
+        <label for="rampDownDuration">ramp down (seconds)</label>
+        <input id="rampDownDuration" type="number" min="10" max="60" value="20">
+      </div>
+      <div class="control">
+        <label for="rampUpDuration">ramp up (seconds)</label>
+        <input id="rampUpDuration" type="number" min="10" max="60" value="20">
+      </div>
+      <button id="submit">submit</button>
+    </div>
+    <iframe id="content"></iframe>
+  </div>
+  <script>
+    submit.addEventListener('click', () => {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const url = `jungle/index.html?NUMBER_OF_VIDS=${numberOfVids.value}&AVERAGE_TIME_DELAY=${avgTimeDelay.value}` +
+        `&RAMP_DOWN_DURATION=${rampDownDuration.value}&RAMP_UP_DURATION=${rampUpDuration.value}` +
+        `&BACKGROUND_SPEED=${backgroundSpeed.value}&TITLE_DURATION=${titleSpeed.value}` +
+        `&RELAXATION_MIN_VOLUME=${relaxMinVol.value}&RELAXATION_MAX_VOLUME=${relaxMaxVol.value}` +
+        `&NATURE_MIN_VOLUME=${natureMinVol.value}&NATURE_MAX_VOLUME=${natureMaxVol.value}` +
+        `&MEDITATION_MIN_VOLUME=${meditationMinVol.value}&MEDITATION_MAX_VOLUME=${meditationMaxVol.value}`;
+
+      // content.src = 
+      if (isMobile) {
+        window.location.href = url;
+      } else {
+        content.src = url;
+      }
+    })
+  </script>
+</body>
+</html>
