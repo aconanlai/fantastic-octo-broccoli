@@ -1,5 +1,6 @@
 * {
   margin: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -7,7 +8,25 @@ body {
   overflow: hidden;
 }
 
+#splash {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background: white;
+  position: fixed;
+  z-index: 9;
+  opacity: 1;
+  transition: opacity 30s;
+}
+
+.faded {
+  opacity: 0 !important;
+}
+
 #playButton {
+  z-index: 10;
   display: none;
   background: red;
   font-size: 4em;
@@ -38,7 +57,21 @@ body {
   text-align: center;
 }
 
-#title {
+#splash-title {
+  font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+  height: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 2.2em;
+  letter-spacing: 0.1em;
+  text-align: center;
+  width: 100%;
+  /* color: white; */
+  color: black;
+}
+
+#header-title {
   margin-top: 0.15em;
   font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
   height: 10vh;

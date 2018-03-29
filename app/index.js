@@ -181,46 +181,79 @@ function initializeScreenSize() {
 
 initializeScreenSize();
 
-let remainingInitial = [...Array(16).keys()];
+function fadeSplash() {
+  const splash = document.querySelector('#splash');
+  splash.classList.add('faded');
+}
+
+let totalInitialPlayed = 0;
+let splashFaded = false;
+
+function handleStateChange(event) {
+  if (event.data === 1) {
+    if (totalInitialPlayed > 15) {
+      return;
+    }
+    totalInitialPlayed += 1;
+    if (splashFaded === false) {
+      fadeSplash();
+      splashFaded = true;
+    }
+    if (totalInitialPlayed > 6) {
+      return loadBlock(4); // eslint-disable-line
+    }
+    if (totalInitialPlayed > 10) {
+      return loadBlock(4); // eslint-disable-line
+    }
+    if (totalInitialPlayed > 12) {
+      setTimeout(() => cycleOne, 30000);
+    }
+  }
+}
+
+const remainingInitial = [...Array(16).keys()];
+
 function loadBlock(number) {
-  
+  for (let i = 0; i < number; i += 1) {
+    if (remainingInitial.length > 0) {
+      const videoToLoad = removeRandomFromArray(initialLoaded);
+      const randomPlayer = removeRandomFromArray(remainingInitial);
+      const name = `player${randomPlayer}`;
+      players[i] = new YT.Player(name, { // eslint-disable-line
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          modestbranding: 1,
+          showinfo: 0,
+          rel: 0,
+          playsinline: 1,
+        },
+        height,
+        width,
+        events: {
+          onReady: (event) => {
+            event.target.loadVideoById(videoToLoad.id, 0, 'tiny');
+            event.target.setVolume(0);
+            const volume = getRandomNumBetween(
+              INITIAL_VOLUMES[videoToLoad.type].min,
+              INITIAL_VOLUMES[videoToLoad.type].max,
+            );
+            fadeIn(event.target, RAMP_UP_DURATION, volume);
+            document.getElementById(name).style.border = 'none';
+          },
+          onStateChange: handleStateChange,
+        },
+      });
+      players[i].type = videoToLoad.id.type;
+    }
+  }
 }
 
 window.onYouTubeIframeAPIReady = function() { // eslint-disable-line
-
-  for (let i = 0; i < NUMBER_OF_VIDS; i += 1) {
-    const name = `player${i}`;
-    players[i] = new YT.Player(name, { // eslint-disable-line
-      playerVars: {
-        autoplay: 1,
-        controls: 0,
-        modestbranding: 1,
-        showinfo: 0,
-        rel: 0,
-        playsinline: 1,
-      },
-      height,
-      width,
-      events: {
-        onReady: (event) => {
-          event.target.loadVideoById(initialLoaded[i].id, 0, 'tiny');
-          event.target.setVolume(0);
-          const volume = getRandomNumBetween(
-            INITIAL_VOLUMES[initialLoaded[i].type].min,
-            INITIAL_VOLUMES[initialLoaded[i].type].max,
-          );
-          fadeIn(event.target, RAMP_UP_DURATION, volume);
-          document.getElementById(name).style.border = 'none';
-        },
-        onStateChange: (event) => {
-          console.log(event.data)
-        },
-      },
-    });
-    players[i].type = initialLoaded[i].id.type;
-  }
-  // const nextCycle = getCycleDelay(AVERAGE_TIME_DELAY);
-  // setTimeout(cycleOne, nextCycle);
+  setInterval(updateGradient, BACKGROUND_SPEED);
+  const title = document.querySelector('#header-title');
+  title.style['animation'] = `color-change ${TITLE_DURATION}s infinite`;
+  loadBlock(8);
 };
 
 const playButton = document.querySelector('#playButton');
@@ -289,7 +322,3 @@ function updateGradient() {
       % colors.length;
   }
 }
-
-// setInterval(updateGradient, BACKGROUND_SPEED);
-// const title = document.querySelector('#title');
-// title.style['animation'] = `color-change ${TITLE_DURATION}s infinite`;
