@@ -51,7 +51,7 @@ export function increaseVolume(player, increment) {
   player.setVolume(currentVolume + increment);
 }
 
-export function fadeOut(player, duration) {
+export function fadeOutYoutube(player, duration) {
   return new Promise((resolve) => {
     const volume = player.getVolume();
     const toLowerIncrement = Math.floor(volume / duration);
@@ -67,7 +67,7 @@ export function fadeOut(player, duration) {
   });
 }
 
-export function fadeIn(player, duration, volume) {
+export function fadeInYoutube(player, duration, volume) {
   return new Promise((resolve) => {
     const toRaiseIncrement = Math.floor(volume / duration);
     let incremented = 0;
@@ -90,4 +90,36 @@ export function getParameterByName(name) {
   if (!results) return null;
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+export function fadeOutAudio(player, duration) {
+  return new Promise((resolve) => {
+    const { volume } = player;
+    const toLowerIncrement = Math.floor(volume / duration);
+    let incremented = 0;
+    const timer = setInterval(() => {
+      // lowerVolume(player, toLowerIncrement);
+      player.volume = volume - toLowerIncrement;
+      incremented += 1;
+      if (incremented > duration) {
+        clearInterval(timer);
+        resolve();
+      }
+    }, 1000);
+  });
+}
+
+export function fadeInAudio(player, duration, volume) {
+  return new Promise((resolve) => {
+    const toRaiseIncrement = Math.floor(volume / duration);
+    let incremented = 0;
+    const timer = setInterval(() => {
+      player.volume = volume - toRaiseIncrement;
+      incremented += 1;
+      if (incremented > duration) {
+        clearInterval(timer);
+        resolve();
+      }
+    }, 1000);
+  });
 }
