@@ -6,8 +6,8 @@ import {
   getRandomNumNear,
   removeRandomFromArray,
   getCycleDelay,
-  fadeOutYoutube,
-  fadeInYoutube,
+  fadeOut,
+  fadeIn,
 } from './utils';
 
 let videosQueued = {
@@ -25,7 +25,6 @@ let initialLoaded = [];
 let height;
 let width;
 
-const OPACITY_CYCLE_DURATION = Number(getParameterByName('OPACITY_CYCLE_DURATION')) || 30;
 const RELAXATION_MUSIC = 'relaxation%20music';
 const NATURE_SOUNDS = 'nature%20sounds';
 const GUIDED_MEDITATION = 'guided%20meditation';
@@ -60,8 +59,7 @@ async function getType(typeString, type) {
   ));
 }
 
-export default async function initializeYoutube() {
-  initializeScreenSize();
+async function initialize() {
   const [relaxation, nature, meditation] = await Promise.all([
     getType(RELAXATION_MUSIC, 'relaxation'),
     getType(NATURE_SOUNDS, 'nature'),
@@ -72,28 +70,26 @@ export default async function initializeYoutube() {
   videosQueued.nature = nature;
   videosQueued.meditation = meditation;
 
-  // const selectedRelaxation = removeRandomFromArray(relaxation);
-  // videosPlayed.relaxation.push(selectedRelaxation);
-  // initialLoaded.push(selectedRelaxation);
+  const firstRandomNum = getRandomNumBetween(4, 7);
+  const secondRandomNum = getRandomNumBetween(4, 7);
+  const thirdRandomNum = 16 - secondRandomNum - firstRandomNum;
+  for (let i = 0; i < firstRandomNum; i += 1) {
+    const selected = removeRandomFromArray(relaxation);
+    videosPlayed.relaxation.push(selected);
+    initialLoaded.push(selected);
+  }
 
-  // const selectedNature = removeRandomFromArray(nature);
-  // videosPlayed.nature.push(selectedNature);
-  // initialLoaded.push(selectedNature);
+  for (let i = 0; i < secondRandomNum; i += 1) {
+    const selected = removeRandomFromArray(nature);
+    videosPlayed.nature.push(selected);
+    initialLoaded.push(selected);
+  }
 
-  // const selectedMeditation = removeRandomFromArray(meditation);
-  // videosPlayed.meditation.push(selectedMeditation);
-  // initialLoaded.push(selectedMeditation);
-
-  const selected1 = removeRandomFromArray(nature);
-  videosPlayed.nature.push(selected1);
-  initialLoaded.push(selected1);
-  const selected2 = removeRandomFromArray(nature);
-  videosPlayed.nature.push(selected2);
-  initialLoaded.push(selected2);
-  const selected3 = removeRandomFromArray(nature);
-  videosPlayed.nature.push(selected3);
-  initialLoaded.push(selected3);
-
+  for (let i = 0; i < thirdRandomNum; i += 1) {
+    const selected = removeRandomFromArray(meditation);
+    videosPlayed.meditation.push(selected);
+    initialLoaded.push(selected);
+  }
   initialLoaded = shuffle(initialLoaded);
 
   const tag = document.createElement('script');
@@ -101,6 +97,8 @@ export default async function initializeYoutube() {
   const firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 }
+
+initialize();
 
 function resetVideos() {
   videosQueued = {
@@ -117,20 +115,15 @@ function resetVideos() {
 
 
 function findAvailableVideoType() {
-  // const remainingCategories = Object.keys(videosQueued).filter((category) => {
-  //   return videosQueued[category].length > 0;
-  // });
-  // if (remainingCategories.length === 0) {
-  //   resetVideos();
-  //   return findAvailableVideoType();
-  // }
-  // const randomNum = getRandomNum(remainingCategories.length);
-  // return remainingCategories[randomNum];
-  if (videosQueued.nature.length === 0) {
+  const remainingCategories = Object.keys(videosQueued).filter((category) => {
+    return videosQueued[category].length > 0;
+  });
+  if (remainingCategories.length === 0) {
     resetVideos();
     return findAvailableVideoType();
   }
-  return 'nature';
+  const randomNum = getRandomNum(remainingCategories.length);
+  return remainingCategories[randomNum];
 }
 
 function loadNewVideo(player) {
@@ -144,57 +137,30 @@ function loadNewVideo(player) {
 async function cycleOne() {
   const random = getRandomNum(window.players.length);
   const player = window.players[random];
-  await fadeOutYoutube(player, RAMP_DOWN_DURATION);
+  await fadeOut(player, RAMP_DOWN_DURATION);
   const type = loadNewVideo(player);
   const newVolume = getRandomNumBetween(
     INITIAL_VOLUMES[type].min,
     INITIAL_VOLUMES[type].max,
   );
-  await fadeInYoutube(player, RAMP_UP_DURATION, newVolume);
+  await fadeIn(player, RAMP_UP_DURATION, newVolume);
   const nextCycle = getCycleDelay(AVERAGE_TIME_DELAY);
   setTimeout(cycleOne, nextCycle);
 }
 
-const opacityDirections = [0, 1, 0];
-
-function cycleOpacity() {
-  for (let i = 0; i < 3; i += 1) {
-    const div = document.getElementById(`player${i}`);
-    const style = window.getComputedStyle(div);
-    const opacity = Number(style.getPropertyValue('opacity'));
-    if (opacityDirections[i] === 1) {
-      if (opacity > 0.7) {
-        opacityDirections[i] = 0;
-      } else {
-        div.style.opacity = opacity + 0.15;
-      }
-    }
-
-    if (opacityDirections[i] === 0) {
-    // opacity going down
-      if (opacity < 0.2) {
-        opacityDirections[i] = 1;
-        div.style.opacity = opacity + 0.15;
-      } else {
-        div.style.opacity = opacity - 0.15;
-      }
-    }
-  }
-}
-
 function initializeScreenSize() {
-  const opacitys = [
-    getRandomNumBetween(2, 7) / 10,
-    getRandomNumBetween(2, 7) / 10,
-    getRandomNumBetween(2, 7) / 10,
-  ];
-
   const content = document.getElementById('content');
-  width = window.innerWidth * 0.9;
+  const windowRatio = window.innerWidth / window.innerHeight;
+  if (windowRatio > 1.6 && windowRatio < 2) {
+    content.style.width = '85vw';
+    width = window.innerWidth / (windowRatio * 3);
+  } else if (windowRatio < 1.6) {
+    content.style.width = '98vw';
+    width = window.innerWidth / (windowRatio * 3.3);
+  }
+  // const width = window.innerWidth / 5.5;
   height = width * 0.619;
-  content.style.width = `${width}px`;
-  content.style.height = `${height}px`;
-  for (let i = 0; i < 3; i += 1) {
+  for (let i = 0; i < NUMBER_OF_VIDS; i += 1) {
     const name = `player${i}`;
     const div = document.createElement('div');
     div.id = name;
@@ -203,14 +169,15 @@ function initializeScreenSize() {
     div.style.height = `${height}px`;
     div.style.width = `${width}px`;
     div.style.width = `${width}px`;
-    div.style.opacity = opacitys[i];
     // div.style.background = 'black';
-    // div.style.border = '1px solid black';
+    div.style.border = '1px solid black';
+    div.style.display = 'inline-block';
     // div.style.margin = ``;
     content.appendChild(div);
   }
-  setInterval(cycleOpacity, 5000);
 }
+
+initializeScreenSize();
 
 function fadeSplash() {
   // const splash = document.querySelector('#splash');
@@ -220,46 +187,69 @@ function fadeSplash() {
 let totalInitialPlayed = 0;
 let splashFaded = false;
 
-function loadInitial() {
-  console.log('loadi nitial')
-  for (let i = 0; i < 3; i += 1) {
-    const videoToLoad = removeRandomFromArray(initialLoaded);
-    const name = `player${i}`;
-    console.log(width);
-    console.log(height);
-    window.players[i] = new YT.Player(name, { // eslint-disable-line
-      playerVars: {
-        autoplay: 1,
-        controls: 0,
-        modestbranding: 1,
-        showinfo: 0,
-        rel: 0,
-        playsinline: 1,
-      },
-      height,
-      width,
-      events: {
-        onReady: (event) => {
-          event.target.loadVideoById(videoToLoad.id, 0, 'tiny');
-          event.target.setVolume(0);
-          const volume = getRandomNumBetween(
-            INITIAL_VOLUMES[videoToLoad.type].min,
-            INITIAL_VOLUMES[videoToLoad.type].max,
-          );
-          fadeInYoutube(event.target, RAMP_UP_DURATION, volume);
-          document.getElementById(name).style.border = 'none';
-        },
-        // onStateChange: handleStateChange,
-      },
-    });
-    window.players[i].type = videoToLoad.id.type;
+function handleStateChange(event) {
+  if (event.data === 1) {
+    event.target.setPlaybackQuality('240p');
+    if (totalInitialPlayed > 15) {
+      return;
+    }
+    totalInitialPlayed += 1;
+    if (splashFaded === false) {
+      fadeSplash();
+      splashFaded = true;
+    }
+    if (totalInitialPlayed === 7) {
+      return loadBlock(8, 12); // eslint-disable-line
+    }
+    if (totalInitialPlayed === 11) {
+      return loadBlock(12, 16); // eslint-disable-line
+    }
+    if (totalInitialPlayed > 12) {
+      setTimeout(() => cycleOne, 30000);
+    }
   }
-  setTimeout(cycleOne, 20000);
+}
+
+const remainingInitial = [...Array(16).keys()];
+
+function loadBlock(start, stop) {
+  for (let i = start; i < stop; i += 1) {
+    if (remainingInitial.length > 0) {
+      const videoToLoad = removeRandomFromArray(initialLoaded);
+      const randomPlayer = removeRandomFromArray(remainingInitial);
+      const name = `player${randomPlayer}`;
+      window.players[i] = new YT.Player(name, { // eslint-disable-line
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          modestbranding: 1,
+          showinfo: 0,
+          rel: 0,
+          playsinline: 1,
+        },
+        height,
+        width,
+        events: {
+          onReady: (event) => {
+            event.target.loadVideoById(videoToLoad.id, 0, 'tiny');
+            event.target.setVolume(0);
+            const volume = getRandomNumBetween(
+              INITIAL_VOLUMES[videoToLoad.type].min,
+              INITIAL_VOLUMES[videoToLoad.type].max,
+            );
+            fadeIn(event.target, RAMP_UP_DURATION, volume);
+            document.getElementById(name).style.border = 'none';
+          },
+          onStateChange: handleStateChange,
+        },
+      });
+      window.players[i].type = videoToLoad.id.type;
+    }
+  }
 }
 
 window.onYouTubeIframeAPIReady = function() { // eslint-disable-line
-  console.log('youtube API ready')
-  loadInitial();
+  loadBlock(0, 8);
 };
 
 // window.onYouTubeIframeAPIReady = function() { // eslint-disable-line

@@ -1,3 +1,4 @@
+import { Howl } from 'howler';
 import {
   getParameterByName,
   getRandomNum,
@@ -30,6 +31,10 @@ const INITIAL_VOLUMES = {
   },
 };
 
+const NUMBER_OF_AUDIOS = Number(getParameterByName('RAMP_DOWN_DURATION')) || 18;
+
+window.audios = [];
+
 let audioPlayed = {
   relaxation: [],
   meditation: [],
@@ -56,7 +61,7 @@ function resetAudio() {
 }
 
 function buildFilepath(type, filename) {
-  return `/media/${type}/${filename}`;
+  return `media/${type}/${filename}`;
 }
 
 function findAvailableAudioType() {
@@ -74,7 +79,13 @@ function findAvailableAudioType() {
 function loadNewAudio(audio) {
   const category = findAvailableAudioType();
   const newAudio = removeRandomFromArray(audioQueued[category]);
-  audio.src = buildFilepath(category, newAudio);
+  const src = buildFilepath(category, newAudio);
+  audio.unload();
+  audio = new Howl({
+    src,
+    loop: true,
+    html5: true,
+  }).play();
   audioPlayed[category].push(newAudio);
   return category;
 }
@@ -82,20 +93,21 @@ function loadNewAudio(audio) {
 async function cycleOne() {
   const random = getRandomNum(window.players.length);
   const audio = window.audios[random];
+  console.log('fading');
   await fadeOutAudio(audio, RAMP_DOWN_DURATION);
   const type = loadNewAudio(audio);
-  audio.volume = 0;
+  audio.volume(0);
   audio.play();
   const newVolume = getRandomNumBetween(
     INITIAL_VOLUMES[type].min,
     INITIAL_VOLUMES[type].max,
-  );
+  ) / 100;
   await fadeInAudio(audio, RAMP_UP_DURATION, newVolume);
   const nextCycle = getCycleDelay(AVERAGE_TIME_DELAY);
   setTimeout(cycleOne, nextCycle);
 }
 
-export default function initializeAudios() {
+export default function initializeAudios({ isMobile }) {
   const { relaxation, naturesounds, meditation } = files;
   audioQueued.relaxation = [...relaxation];
   audioQueued.meditation = [...meditation];
@@ -103,9 +115,9 @@ export default function initializeAudios() {
 
   let initialLoaded = [];
 
-  const firstRandomNum = getRandomNumBetween(4, 7);
+  const firstRandomNum = getRandomNumBetween(4, 8);
   const secondRandomNum = getRandomNumBetween(4, 7);
-  const thirdRandomNum = 16 - secondRandomNum - firstRandomNum;
+  const thirdRandomNum = 18 - secondRandomNum - firstRandomNum;
 
   for (let i = 0; i < firstRandomNum; i += 1) {
     const selected = removeRandomFromArray(relaxation);
@@ -136,22 +148,46 @@ export default function initializeAudios() {
 
   initialLoaded = shuffle(initialLoaded);
 
-  const targetDiv = document.getElementById('audios');
-
-  for (let i = 0; i < 13; i += 1) {
-    const newAudio = document.createElement('audio');
-    window.audios.push(newAudio);
-    const audioToLoad = initialLoaded[i];
-    const volume = (getRandomNumBetween(
-      INITIAL_VOLUMES[audioToLoad.type].min,
-      INITIAL_VOLUMES[audioToLoad.type].max,
-    ) / 100);
-    newAudio.volume = volume;
-    newAudio.src = buildFilepath(audioToLoad.type, audioToLoad.filename);
-    targetDiv.appendChild(newAudio);
-    newAudio.play();
-    fadeInAudio(newAudio, RAMP_UP_DURATION, volume);
+  let isMobilePlaying = false;
+  function playAll() {
+    for (let i = 0; i < NUMBER_OF_AUDIOS; i += 1) {
+      window.audios[i].play();
+    }
   }
 
-  setTimeout(() => cycleOne, 30000);
+  for (let i = 0; i < NUMBER_OF_AUDIOS; i += 1) {
+    // const newAudio = document.createElement('audio');
+    // newAudio.id = `audio${i}`;
+    // window.audios.push(newAudio);
+    const audioToLoad = initialLoaded[i];
+    // const volume = (getRandomNumBetween(
+    //   INITIAL_VOLUMES[audioToLoad.type].min,
+    //   INITIAL_VOLUMES[audioToLoad.type].max,
+    // ) / 100);
+    // newAudio.volume = volume;
+    // newAudio.src = buildFilepath(audioToLoad.type, audioToLoad.filename);
+    // newAudio.preload = 'true';
+    // targetDiv.appendChild(newAudio);
+    // newAudio.play();
+    // fadeInAudio(newAudio, RAMP_UP_DURATION, volume);
+
+    const src = buildFilepath(audioToLoad.type, audioToLoad.filename);
+    const sound = new Howl({
+      src,
+      loop: true,
+      html5: true,
+    });
+    window.audios.push(sound);
+  }
+  if (!isMobile) {
+    playAll();
+    setTimeout(cycleOne, 30000);
+  } else {
+    document.addEventListener('click', () => {
+      if (!isMobilePlaying) {
+        playAll();
+        isMobilePlaying = true;
+      }
+    });
+  }
 }

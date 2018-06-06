@@ -93,33 +93,130 @@ export function getParameterByName(name) {
 }
 
 export function fadeOutAudio(player, duration) {
+  const realDuration = duration * 1000;
   return new Promise((resolve) => {
-    const { volume } = player;
-    const toLowerIncrement = Math.floor(volume / duration);
-    let incremented = 0;
-    const timer = setInterval(() => {
-      // lowerVolume(player, toLowerIncrement);
-      player.volume = volume - toLowerIncrement;
-      incremented += 1;
-      if (incremented > duration) {
-        clearInterval(timer);
-        resolve();
-      }
-    }, 1000);
+    const vol = player.volume();
+    console.log(duration);
+    console.log(vol);
+    player.fade(vol, 0, realDuration);
+    setTimeout(() => {
+      resolve();
+    }, realDuration);
   });
+  // return new Promise((resolve) => {
+  //   const { volume } = player;
+  //   const toLowerIncrement = Math.floor(volume / duration);
+  //   let incremented = 0;
+  //   const timer = setInterval(() => {
+  //     // lowerVolume(player, toLowerIncrement);
+  //     player.volume = volume - toLowerIncrement;
+  //     incremented += 1;
+  //     if (incremented > duration) {
+  //       clearInterval(timer);
+  //       resolve();
+  //     }
+  //   }, 1000);
+  // });
 }
 
 export function fadeInAudio(player, duration, volume) {
+  console.log('fading in');
+  const realDuration = duration * 1000;
   return new Promise((resolve) => {
-    const toRaiseIncrement = Math.floor(volume / duration);
-    let incremented = 0;
-    const timer = setInterval(() => {
-      player.volume = volume - toRaiseIncrement;
-      incremented += 1;
-      if (incremented > duration) {
-        clearInterval(timer);
-        resolve();
-      }
-    }, 1000);
+    player.fade(0, volume, realDuration);
+    setTimeout(() => {
+      resolve();
+    }, realDuration);
   });
+
+  // return new Promise((resolve) => {
+  //   const toRaiseIncrement = Math.floor(volume / duration);
+  //   let incremented = 0;
+  //   const timer = setInterval(() => {
+  //     player.volume = volume - toRaiseIncrement;
+  //     incremented += 1;
+  //     if (incremented > duration) {
+  //       clearInterval(timer);
+  //       resolve();
+  //     }
+  //   }, 1000);
+  // });
+}
+
+const opacities = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+const opacityWeights = [4, 5, 6, 4, 3, 1] //weight of each element above
+const opacityWeightsNorm = new Array() //normalized weights
+
+let sum = 0;
+for (let i = 0; i < opacities.length; i++) {
+  sum += opacityWeights[i];
+  opacityWeightsNorm[i] = sum;
+}
+
+for (let i = 0; i < opacities.length; i++) {
+  opacityWeightsNorm[i] = opacityWeightsNorm[i] / sum;
+}
+
+export function getRandomOpacity() {
+  const needle = Math.random();
+  let high = opacityWeightsNorm.length - 1;
+  let low = 0;
+  let probe;
+
+  while (low < high) {
+    probe = Math.ceil((high + low) / 2);
+
+    if (opacityWeightsNorm[probe] < needle) {
+      low = probe + 1;
+    } else if (opacityWeightsNorm[probe] > needle) {
+      high = probe - 1;
+    } else {
+      return probe;
+    }
+  }
+  let answer;
+  if (low !== high) {
+    answer = (opacityWeightsNorm[low] >= needle) ? low : probe;
+  } else {
+    answer = (opacityWeightsNorm[low] >= needle) ? low : low + 1;
+  }
+  return opacities[answer];
+}
+
+export function requestInterval(fn, delay) {
+  var requestAnimFrame = (function () {
+    return window.requestAnimationFrame || function (callback, element) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  })(),
+  start = new Date().getTime(),
+  handle = {};
+  function loop() {
+    handle.value = requestAnimFrame(loop);
+    var current = new Date().getTime(),
+    delta = current - start;
+    if (delta >= delay) {
+      fn.call();
+      start = new Date().getTime();
+    }
+  }
+  handle.value = requestAnimFrame(loop);
+  return handle;
+}
+
+export function throttle(callback, wait, context = this) {
+  let timeout = null;
+  let callbackArgs = null;
+
+  const later = () => {
+    callback.apply(context, callbackArgs);
+    timeout = null;
+  };
+
+  return () => {
+    if (!timeout) {
+      callbackArgs = arguments;
+      timeout = setTimeout(later, wait);
+    }
+  };
 }
