@@ -61,7 +61,7 @@ function resetAudio() {
 }
 
 function buildFilepath(type, filename) {
-  return `media/${type}/${filename}`;
+  return `audio/${type}/${filename}`;
 }
 
 function findAvailableAudioType() {
@@ -107,7 +107,8 @@ async function cycleOne() {
   setTimeout(cycleOne, nextCycle);
 }
 
-export default function initializeAudios({ isMobile }) {
+export default function initializeAudios(state) {
+  const { isMobile } = state;
   const { relaxation, naturesounds, meditation } = files;
   audioQueued.relaxation = [...relaxation];
   audioQueued.meditation = [...meditation];
@@ -148,7 +149,6 @@ export default function initializeAudios({ isMobile }) {
 
   initialLoaded = shuffle(initialLoaded);
 
-  let isMobilePlaying = false;
   function playAll() {
     for (let i = 0; i < NUMBER_OF_AUDIOS; i += 1) {
       window.audios[i].play();
@@ -184,9 +184,9 @@ export default function initializeAudios({ isMobile }) {
     setTimeout(cycleOne, 30000);
   } else {
     document.addEventListener('click', () => {
-      if (!isMobilePlaying) {
+      if (!state.isMobileAudioPlaying) {
         playAll();
-        isMobilePlaying = true;
+        state.isMobileAudioPlaying = true;
       }
     });
   }

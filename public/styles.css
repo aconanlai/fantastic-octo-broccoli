@@ -129,6 +129,24 @@ body {
   transition: opacity 2.5s;
 }
 
+.image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0.5;
+  z-index: 99;
+  transition: opacity 10s;
+}
+
+.gif {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 98;
+  transition: opacity 10s;
+}
+
 @-webkit-keyframes color-change {
   0% { color: rgb(45, 175, 230) }
   5% { color: rgb(255, 137, 161) }
@@ -251,5 +269,50 @@ body {
   }
   #title {
     font-size: 1em;
+  }
+}
+
+@media (min-aspect-ratio: 8/6) {
+  .image {
+    height: auto;
+    width: 100vw;
+  }
+  .video {
+    height: auto;
+    width: 100vw;
+  }
+  .gif {
+    height: auto;
+    width: 100vw;
+  }
+}
+
+@media (max-aspect-ratio: 8/6) {
+  .image {
+    height: 200vh;
+    width: auto;
+  }
+  .video {
+    height: 200vh;
+    width: auto;
+  }
+  .gif {
+    height: 200vh;
+    width: auto;
+  }
+}
+
+@media (max-aspect-ratio: 8/8) {
+  .image {
+    height: 120vh;
+    width: auto;
+  }
+  .video {
+    height: 120vh;
+    width: auto;
+  }
+  .gif {
+    height: 120vh;
+    width: auto;
   }
 }
