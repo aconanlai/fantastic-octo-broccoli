@@ -61,7 +61,8 @@ function resetAudio() {
 }
 
 function buildFilepath(type, filename) {
-  return `audio/${type}/${filename}`;
+  // return `audio/${type}/${filename}`;
+  return filename;
 }
 
 function findAvailableAudioType() {

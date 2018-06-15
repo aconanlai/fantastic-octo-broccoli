@@ -37,12 +37,12 @@ let videosToPlay = videos;
 let videosPlayed = [];
 
 function buildVideoPath(filename) {
-  const videoPath = 'http://localhost:7777/video';
+  const videoPath = 'video';
   return `${videoPath}/${filename}`;
 }
 
 function buildImagePath(filename) {
-  const imagePath = 'http://localhost:7778/image';
+  const imagePath = 'image';
   return `${imagePath}/${filename}`;
 }
 

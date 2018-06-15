@@ -36,6 +36,37 @@ body {
   transform: translate(-50%, -50%);
 }
 
+#eye {
+  top: 0;
+  right: 0;
+  position: fixed;
+  margin: 1px 8px;
+  width: 50px;
+  opacity: 0.8;
+  z-index: 999;
+}
+
+#modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 998;
+  opacity: 0.7;
+}
+
+#modaltext {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  padding: 4em 6em;
+}
+
 #wrapper {
   display: flex;
   flex-direction: column;
@@ -287,17 +318,17 @@ body {
   }
 }
 
-@media (max-aspect-ratio: 8/6) {
+@media (min-aspect-ratio: 8/8) {
   .image {
-    height: 200vh;
+    height: 150vh;
     width: auto;
   }
   .video {
-    height: 200vh;
+    height: 150vh;
     width: auto;
   }
   .gif {
-    height: 200vh;
+    height: 150vh;
     width: auto;
   }
 }
