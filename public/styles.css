@@ -44,27 +44,61 @@ body {
   width: 50px;
   opacity: 0.8;
   z-index: 999;
+  transition: opacity 1s;
+}
+
+#x {
+  display: none;
+  top: 0;
+  right: 0;
+  position: fixed;
+  margin: 1px 8px;
+  width: 50px;
+  opacity: 0;
+  z-index: 999;
+  transition: opacity 1s;
+}
+
+#eye:hover {
+  -webkit-filter: drop-shadow( 1px 1px 1px #000 ); 
+  filter: drop-shadow( 1px 1px 1px #000 );
+}
+
+#x:hover {
+  -webkit-filter: drop-shadow( 1px 1px 1px #000 ); 
+  filter: drop-shadow( 1px 1px 1px #000 );
 }
 
 #modal {
+  opacity: 0;
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   background: white;
-  z-index: 998;
-  opacity: 0.7;
+  z-index: 997;
+  transition: opacity 1s;
 }
 
 #modaltext {
+  opacity: 0;
+  font-family: 'Arial', sans-serif;
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 999;
+  z-index: 998;
   padding: 4em 6em;
+  font-size: 1.75em;
+  letter-spacing: 0.1em;
+  line-height: 1.75em;
+  transition: opacity 1s;
+}
+
+#modaltext p {
+  margin-bottom: 1em;
 }
 
 #wrapper {
@@ -91,23 +125,9 @@ body {
   position: relative;
 }
 
-#splash-title {
-  font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
-  height: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  font-size: 2.2em;
-  letter-spacing: 0.1em;
-  text-align: center;
-  width: 100%;
-  /* color: white; */
-  color: black;
-}
-
 #header-wrapper {
   position: fixed;
-  z-index: 999;
+  z-index: 997;
   width: 100vw;
   height: 100vh;
   top: 0;
@@ -118,29 +138,50 @@ body {
 }
 
 #header-title {
-  z-index: 999;
+  /* z-index: 999;
   position: relative;
   font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
-  /* height: 10vh; */
-  /* left: 50%; */
-  /* top: 50%; */
-  /* -webkit-transform: translate(-50%, -50%) scale(1, 5); */
-  /* transform: translate(-50%, -50%) scale(1, 5); */
   -webkit-transform: scale(1, 5);
   transform: scale(1, 5);
   font-size: 5.8vw;
-  /* line-height: 11vw; */
   letter-spacing: 0.1em;
   text-align: center;
   width: 100%;
-  /* color: white; */
   display:inline-block;
   opacity: 0.1;
   transition: opacity 2s;
   background-image: linear-gradient(rgb(100,231,151), rgb(236, 78, 31));
   -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent; */
+
+
+
+  z-index: 996;
+  position: relative;
+  font-family: "Arial Bold", Gadget, sans-serif;
+  -webkit-transform: scale(1, 5);
+  transform: scale(1, 5);
+  font-size: 5.7vw;
+  letter-spacing: 0.1em;
+  text-align: center;
+  width: 100%;
+  display:inline-block;
+  opacity: 0.2;
+  transition: opacity 2s;
+  background-image: linear-gradient(rgb(100,231,151), rgb(236, 78, 31));
+  -webkit-background-clip: text;
+  /* line-height: 100vh; */
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+@-moz-document url-prefix() {
+  #header-title {
+    line-height: 100vh;
+  }
+}
+
 
 /* .video {
   z-index: 1;
@@ -303,18 +344,18 @@ body {
   }
 }
 
-@media (min-aspect-ratio: 8/6) {
+@media (min-aspect-ratio: 8/4) {
   .image {
-    height: auto;
-    width: 100vw;
+    height: auto !important;
+    width: 100vw !important;
   }
   .video {
-    height: auto;
-    width: 100vw;
+    height: auto !important;
+    width: 100vw !important;
   }
   .gif {
-    height: auto;
-    width: 100vw;
+    height: auto !important;
+    width: 100vw !important;
   }
 }
 
@@ -345,5 +386,41 @@ body {
   .gif {
     height: 120vh;
     width: auto;
+  }
+
+  #header-title {
+    font-family: "Arial Bold", Gadget, sans-serif;
+    -webkit-transform: scale(1, 6);
+    transform: scale(1, 6);
+    font-size: 5.2vw;
+    letter-spacing: 0.15em;
+  }
+}
+
+@media only screen and (max-device-width: 1024px) {
+  #modaltext {
+    padding: 2em 2em;
+    font-size: 1.5em;
+    letter-spacing: 0.1em;
+    line-height: 1.5em;
+  }
+}
+
+
+@media only screen and (max-device-width: 800px) {
+  #modaltext {
+    padding: 2em 2em;
+    font-size: 1.2em;
+    letter-spacing: 0.1em;
+    line-height: 1.2em;
+  }
+}
+
+@media only screen and (max-device-width: 600px) {
+  #modaltext {
+    padding: 2em 2em;
+    font-size: 1em;
+    letter-spacing: 0.1em;
+    line-height: 1em;
   }
 }

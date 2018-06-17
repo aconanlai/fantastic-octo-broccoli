@@ -6,7 +6,6 @@ import initializeVideo from './video';
 
 const state = initializeState();
 
-initializeAudios(state);
 initializeGraphics();
-initializeVideo(state);
+initializeVideo(state, initializeAudios);
 // initializeYoutube();

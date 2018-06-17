@@ -8,6 +8,7 @@ import {
   fadeOutAudio,
   fadeInAudio,
   getCycleDelay,
+  requestInterval,
 } from './utils';
 
 import files from './files.json';
@@ -92,9 +93,9 @@ function loadNewAudio(audio) {
 }
 
 async function cycleOne() {
-  const random = getRandomNum(window.players.length);
+  const random = getRandomNum(window.audios.length);
   const audio = window.audios[random];
-  console.log('fading');
+  audio.isCycling = true;
   await fadeOutAudio(audio, RAMP_DOWN_DURATION);
   const type = loadNewAudio(audio);
   audio.volume(0);
@@ -104,11 +105,28 @@ async function cycleOne() {
     INITIAL_VOLUMES[type].max,
   ) / 100;
   await fadeInAudio(audio, RAMP_UP_DURATION, newVolume);
+  setTimeout(() => {
+    audio.isCycling = false;
+  }, RAMP_UP_DURATION * 1000);
   const nextCycle = getCycleDelay(AVERAGE_TIME_DELAY);
   setTimeout(cycleOne, nextCycle);
 }
 
+function cycleVolume() {
+  for (let i = 0; i < NUMBER_OF_AUDIOS; i += 1) {
+    const audio = window.audios[i];
+    if (!audio.isCycling) {
+      const targetVolume = (getRandomNumBetween(3, 10) / 10);
+      const currentVolume = audio.volume();
+      console.log(targetVolume);
+      console.log(currentVolume);
+      audio.fade(currentVolume, targetVolume, 10000);
+    }
+  }
+}
+
 export default function initializeAudios(state) {
+  console.log('initializing audio');
   const { isMobile } = state;
   const { relaxation, naturesounds, meditation } = files;
   audioQueued.relaxation = [...relaxation];
@@ -191,4 +209,5 @@ export default function initializeAudios(state) {
       }
     });
   }
+  requestInterval(cycleVolume, 10000);
 }

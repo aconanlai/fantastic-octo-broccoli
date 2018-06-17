@@ -11,23 +11,25 @@ const opacityDirections = [0, 1, 0];
 function cycleOpacity() {
   for (let i = 0; i < 3; i += 1) {
     const div = document.getElementById(`video${i}`);
-    const style = window.getComputedStyle(div);
-    const opacity = Number(style.getPropertyValue('opacity'));
-    if (opacityDirections[i] === 1) {
-      if (opacity > 0.7) {
-        opacityDirections[i] = 0;
-      } else {
-        div.style.opacity = opacity + 0.15;
+    if (!div.isCycling) {
+      const style = window.getComputedStyle(div);
+      const opacity = Number(style.getPropertyValue('opacity'));
+      if (opacityDirections[i] === 1) {
+        if (opacity > 0.7) {
+          opacityDirections[i] = 0;
+        } else {
+          div.style.opacity = opacity + 0.15;
+        }
       }
-    }
 
-    if (opacityDirections[i] === 0) {
-    // opacity going down
-      if (opacity < 0.2) {
-        opacityDirections[i] = 1;
-        div.style.opacity = opacity + 0.15;
-      } else {
-        div.style.opacity = opacity - 0.15;
+      if (opacityDirections[i] === 0) {
+      // opacity going down
+        if (opacity < 0.3) {
+          opacityDirections[i] = 1;
+          div.style.opacity = opacity + 0.15;
+        } else {
+          div.style.opacity = opacity - 0.15;
+        }
       }
     }
   }
@@ -38,6 +40,7 @@ let videosPlayed = [];
 
 function buildVideoPath(filename) {
   const videoPath = 'video';
+  // const videoPath = 'http://riajv.adambasanta.com';
   return `${videoPath}/${filename}`;
 }
 
@@ -57,12 +60,17 @@ function selectRandomVideo() {
 }
 
 async function cycleVideo() {
-  console.log('cycling video');
   const random = getRandomNum(3);
   const videoPlayer = document.querySelector(`#video${random}`);
   const randomPath = selectRandomVideo();
-  videoPlayer.src = randomPath;
-  videoPlayer.play();
+  videoPlayer.isCycling = true;
+  videoPlayer.opacity = 0;
+  setTimeout(() => {
+    videoPlayer.src = randomPath;
+    videoPlayer.play();
+    videoPlayer.opacity = 0.4;
+    videoPlayer.isCycling = false;
+  }, 5000);
 }
 
 function setInitialImages() {
@@ -91,9 +99,11 @@ function setInitialGifs(state) {
   }
 }
 
-function fadeOutImages(state) {
+function fadeOutImages(state, initializeAudio) {
   if (!state.imageFadeOutInitiated) {
-    console.log('fading out images');
+    initializeAudio(state);
+    requestInterval(cycleVideo, 30000);
+    requestInterval(cycleOpacity, 5000);
     state.imageFadeOutInitiated = true;
     const images = document.querySelectorAll('.image');
     images.forEach((image) => {
@@ -105,7 +115,12 @@ function fadeOutImages(state) {
   }
 }
 
-function setInitialVideos(state) {
+function setInitialVideos(state, initializeAudio) {
+  if (state.isMobile) {
+    setInitialGifs(state);
+    fadeOutImages(state, initializeAudio);
+    return;
+  }
   const vids = document.querySelectorAll('.video');
   for (let index = 0; index < vids.length; index += 1) {
     const element = vids[index];
@@ -117,22 +132,20 @@ function setInitialVideos(state) {
         // throw new Error();
         // console.log('playing video success');
         state.videoPlaying = true;
-        fadeOutImages(state);
+        fadeOutImages(state, initializeAudio);
       })
       .catch((err) => {
         // TODO: switch to GIF mode
         setInitialGifs(state);
-        fadeOutImages(state);
+        fadeOutImages(state, initializeAudio);
         return null;
       });
   }
 }
 
-export default async function initializeVideos(state) {
-  // requestInterval(cycleOpacity, 5000);
+export default async function initializeVideos(state, initializeAudio) {
 
   setInitialImages();
-  setInitialVideos(state);
+  setInitialVideos(state, initializeAudio);
   // TODO: handle jpg and gif fallback
-  // requestInterval(cycleVideo, 30000);
 }

@@ -46,13 +46,13 @@ let gradientSpeed = 0.002;
 
 const titleColors = shuffle([
   [62, 35, 255],
-  [60, 255, 60],
   [255, 35, 98],
   [45, 175, 230],
   [255, 0, 255],
   [255, 128, 0],
   [255, 137, 161],
   [176, 255, 137],
+  [60, 255, 60],
   [137, 255, 217],
   [58, 88, 163],
   [162, 58, 72],
@@ -135,16 +135,40 @@ function updateGradient() {
 }
 
 const title = document.querySelector('#header-title');
+const eye = document.querySelector('#eye');
+const x = document.querySelector('#x');
+const modal = document.querySelector('#modal');
+const modaltext = document.querySelector('#modaltext');
+
+function handleEyeClick() {
+  eye.style.opacity = 0;
+  eye.style.display = 'none';
+  x.style.display = 'block';
+  x.style.opacity = 1;
+  modal.style.opacity = 0.7;
+  modaltext.style.opacity = 1;
+}
+
+function handleXClick() {
+  x.style.opacity = 0;
+  x.style.display = 'none';
+  eye.style.display = 'block';
+  eye.style.opacity = 1;
+  modal.style.opacity = 0;
+  modaltext.style.opacity = 0;
+}
+
+
 export default function initializeGraphics() {
-  // setInterval(updateGradient, BACKGROUND_SPEED);
-  // setInterval(cycleTitleOpacity, 10000);
-  // title.style['animation'] = `color-change ${TITLE_DURATION}s infinite`;
+  eye.addEventListener('click', handleEyeClick);
+  x.addEventListener('click', handleXClick);
+
   requestInterval(updateGradient, BACKGROUND_SPEED);
   requestInterval(cycleTitleOpacity, 10000);
 }
 
 let titleOpacityDirection = 1;
-let opacityCeiling = 0.8;
+let opacityCeiling = 0.75;
 
 function cycleTitleOpacity() {
   const style = window.getComputedStyle(title);
