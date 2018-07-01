@@ -39,13 +39,13 @@ let videosToPlay = videos;
 let videosPlayed = [];
 
 function buildVideoPath(filename) {
-  const videoPath = 'video';
-  // const videoPath = 'http://riajv.adambasanta.com';
+  // const videoPath = 'video';
+  const videoPath = 'https://d3ngapjou6irsp.cloudfront.net';
   return `${videoPath}/${filename}`;
 }
 
 function buildImagePath(filename) {
-  const imagePath = 'image';
+  const imagePath = 'https://d1hrqqb6z8fafj.cloudfront.net';
   return `${imagePath}/${filename}`;
 }
 
