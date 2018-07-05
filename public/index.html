@@ -5,7 +5,461 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  <style>
+    * {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#splash {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  z-index: 999;
+}
+
+.faded {
+  opacity: 0 !important;
+}
+
+#playButton {
+  z-index: 10;
+  display: none;
+  background: red;
+  font-size: 4em;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#eye {
+  top: 0;
+  right: 0;
+  position: fixed;
+  margin: 4px 8px;
+  width: 50px;
+  opacity: 0.8;
+  z-index: 998;
+  transition: opacity 1s;
+  cursor: pointer;
+}
+
+#x {
+  display: none;
+  top: 0;
+  right: 0;
+  position: fixed;
+  margin: 1px 8px;
+  width: 50px;
+  opacity: 0;
+  z-index: 998;
+  transition: opacity 1s;
+  cursor: pointer;
+}
+
+#eye:hover {
+  -webkit-filter: drop-shadow( 1px 1px 1px #000 ); 
+  filter: drop-shadow( 1px 1px 1px #000 );
+}
+
+#x:hover {
+  -webkit-filter: drop-shadow( 1px 1px 1px #000 ); 
+  filter: drop-shadow( 1px 1px 1px #000 );
+}
+
+#modal {
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 940;
+  transition: opacity 1s;
+}
+
+#modaltext {
+  opacity: 0;
+  font-family: 'Arial', sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  padding: 5vh 5vw;
+  font-size: 1.15em;
+  letter-spacing: 0.1em;
+  line-height: 1.5em;
+  transition: opacity 1s;
+}
+
+#modaltext p {
+  margin-bottom: 1em;
+}
+
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+#content-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#content {
+  position: relative;
+}
+
+#header-wrapper {
+  position: fixed;
+  z-index: 960;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#header-title {
+  position: relative;
+  opacity: 0;
+  transition: opacity 2s;
+  background-image: linear-gradient(rgb(100,231,151), rgb(236, 78, 31));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bigtext {
+  z-index: 996;
+  font-family: "Arial Bold", Gadget, sans-serif;
+  -webkit-transform: scale(1, 5);
+  transform: scale(1, 5);
+  font-size: 5.7vw;
+  letter-spacing: 0.1em;
+  text-align: center;
+  width: 100%;
+  display: block;
+  position: absolute;
+}
+
+#startButton {
+  cursor: pointer;
+  transition: opacity 1s;
+}
+
+#startButton:hover {
+  text-shadow: 2px 2px #ff0000;
+}
+
+@-moz-document url-prefix() {
+  .bigtext {
+    line-height: 100vh;
+  }
+}
+
+
+.site-link {
+  color: black;
+}
+
+.site-link:hover {
+  font-style: italic;
+}
+
+.video {
+  /* width: 120vw; */
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0.5;
+  transition: opacity 2.5s;
+}
+
+.image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0.5;
+  z-index: 99;
+  transition: opacity 10s;
+}
+
+.gif {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 98;
+  transition: opacity 10s;
+}
+
+@-webkit-keyframes color-change {
+  0% { color: rgb(45, 175, 230) }
+  5% { color: rgb(255, 137, 161) }
+  10% { color: rgb(245, 93, 32) }
+  15% { color: rgb(45, 73, 230) }
+  20% { color: rgb(235, 231, 18) }
+  25% { color: rgb(238, 88, 77) }
+  30% { color: rgb(137, 255, 217) }
+  35% { color: rgb(255, 0, 255) }
+  40% { color: rgb(45, 230, 153) }
+  45% { color: rgb(150, 230, 45) }
+  50% { color: rgb(62, 35, 255) }
+  55% { color: rgb(58, 88, 163) }
+  60% { color: rgba(13, 55, 73, 0.781) }
+  65% { color: rgb(255, 35, 98) }
+  70% { color: rgb(151, 28, 145) }
+  75% { color: rgb(162, 58, 72) }
+  80% { color: rgb(76, 30, 94) }
+  85% { color: rgb(255, 128, 0) }
+  90% { color: rgb(230, 45, 45) }
+  95% { color: rgb(60, 255, 60) }
+  100% { color: rgb(176, 255, 137) }
+}
+@-moz-keyframes color-change {
+  0% { color: rgb(45, 175, 230) }
+  5% { color: rgb(255, 137, 161) }
+  10% { color: rgb(245, 93, 32) }
+  15% { color: rgb(45, 73, 230) }
+  20% { color: rgb(235, 231, 18) }
+  25% { color: rgb(238, 88, 77) }
+  30% { color: rgb(137, 255, 217) }
+  35% { color: rgb(255, 0, 255) }
+  40% { color: rgb(45, 230, 153) }
+  45% { color: rgb(150, 230, 45) }
+  50% { color: rgb(62, 35, 255) }
+  55% { color: rgb(58, 88, 163) }
+  60% { color: rgba(13, 55, 73, 0.781) }
+  65% { color: rgb(255, 35, 98) }
+  70% { color: rgb(151, 28, 145) }
+  75% { color: rgb(162, 58, 72) }
+  80% { color: rgb(76, 30, 94) }
+  85% { color: rgb(255, 128, 0) }
+  90% { color: rgb(230, 45, 45) }
+  95% { color: rgb(60, 255, 60) }
+  100% { color: rgb(176, 255, 137) }
+}
+@-ms-keyframes color-change {
+  0% { color: rgb(45, 175, 230) }
+  5% { color: rgb(255, 137, 161) }
+  10% { color: rgb(245, 93, 32) }
+  15% { color: rgb(45, 73, 230) }
+  20% { color: rgb(235, 231, 18) }
+  25% { color: rgb(238, 88, 77) }
+  30% { color: rgb(137, 255, 217) }
+  35% { color: rgb(255, 0, 255) }
+  40% { color: rgb(45, 230, 153) }
+  45% { color: rgb(150, 230, 45) }
+  50% { color: rgb(62, 35, 255) }
+  55% { color: rgb(58, 88, 163) }
+  60% { color: rgba(13, 55, 73, 0.781) }
+  65% { color: rgb(255, 35, 98) }
+  70% { color: rgb(151, 28, 145) }
+  75% { color: rgb(162, 58, 72) }
+  80% { color: rgb(76, 30, 94) }
+  85% { color: rgb(255, 128, 0) }
+  90% { color: rgb(230, 45, 45) }
+  95% { color: rgb(60, 255, 60) }
+  100% { color: rgb(176, 255, 137) }
+}
+@-o-keyframes color-change {
+  0% { color: rgb(45, 175, 230) }
+  5% { color: rgb(255, 137, 161) }
+  10% { color: rgb(245, 93, 32) }
+  15% { color: rgb(45, 73, 230) }
+  20% { color: rgb(235, 231, 18) }
+  25% { color: rgb(238, 88, 77) }
+  30% { color: rgb(137, 255, 217) }
+  35% { color: rgb(255, 0, 255) }
+  40% { color: rgb(45, 230, 153) }
+  45% { color: rgb(150, 230, 45) }
+  50% { color: rgb(62, 35, 255) }
+  55% { color: rgb(58, 88, 163) }
+  60% { color: rgba(13, 55, 73, 0.781) }
+  65% { color: rgb(255, 35, 98) }
+  70% { color: rgb(151, 28, 145) }
+  75% { color: rgb(162, 58, 72) }
+  80% { color: rgb(76, 30, 94) }
+  85% { color: rgb(255, 128, 0) }
+  90% { color: rgb(230, 45, 45) }
+  95% { color: rgb(60, 255, 60) }
+  100% { color: rgb(176, 255, 137) }
+}
+@keyframes color-change {
+  0% { color: rgb(45, 175, 230) }
+  5% { color: rgb(255, 137, 161) }
+  10% { color: rgb(245, 93, 32) }
+  15% { color: rgb(45, 73, 230) }
+  20% { color: rgb(235, 231, 18) }
+  25% { color: rgb(238, 88, 77) }
+  30% { color: rgb(137, 255, 217) }
+  35% { color: rgb(255, 0, 255) }
+  40% { color: rgb(45, 230, 153) }
+  45% { color: rgb(150, 230, 45) }
+  50% { color: rgb(62, 35, 255) }
+  55% { color: rgb(58, 88, 163) }
+  60% { color: rgba(13, 55, 73, 0.781) }
+  65% { color: rgb(255, 35, 98) }
+  70% { color: rgb(151, 28, 145) }
+  75% { color: rgb(162, 58, 72) }
+  80% { color: rgb(76, 30, 94) }
+  85% { color: rgb(255, 128, 0) }
+  90% { color: rgb(230, 45, 45) }
+  95% { color: rgb(60, 255, 60) }
+  100% { color: rgb(176, 255, 137) }
+}
+
+@media screen and (max-device-width: 1000px) {
+  #playButton {
+    display: block;
+  }
+  #title {
+    font-size: 1em;
+  }
+}
+
+@media (min-aspect-ratio: 8/4) {
+  .image {
+    height: auto !important;
+    width: 100vw !important;
+  }
+  .video {
+    height: auto !important;
+    width: 100vw !important;
+  }
+  .gif {
+    height: auto !important;
+    width: 100vw !important;
+  }
+}
+
+@media (min-aspect-ratio: 8/8) {
+  .image {
+    height: 150vh;
+    width: auto;
+  }
+  .video {
+    height: 150vh;
+    width: auto;
+  }
+  .gif {
+    height: 150vh;
+    width: auto;
+  }
+}
+
+@media (max-aspect-ratio: 8/8) {
+  .image {
+    height: 120vh;
+    width: auto;
+  }
+  .video {
+    height: 120vh;
+    width: auto;
+  }
+  .gif {
+    height: 120vh;
+    width: auto;
+  }
+
+  .bigtext {
+    font-family: "Arial Bold", Gadget, sans-serif;
+    -webkit-transform: scale(1, 6);
+    transform: scale(1, 6);
+    font-size: 5.2vw;
+    letter-spacing: 0.15em;
+  }
+}
+
+@media only screen and (max-device-width: 1024px) and (orientation:landscape) {
+  #modaltext {
+    padding: 2em 2em;
+    font-size: 1em;
+    letter-spacing: 0.1em;
+    line-height: 1.2em;
+  }
+}
+
+@media only screen and (min-device-width: 700px) and (orientation:portrait) {
+  #modaltext {
+    padding: 2em 2em;
+    font-size: 1.5em;
+    letter-spacing: 0.1em;
+    line-height: 1.5em;
+  }
+}
+
+
+
+@media only screen and (max-device-width: 800px) and (orientation:landscape) {
+  #modaltext {
+    padding: 2em 2em;
+    font-size: 0.85em;
+    letter-spacing: 0.1em;
+    line-height: 0.85em;
+  }
+
+  #eye, #x {
+    width: 30px;
+  }
+}
+
+@media only screen and (max-device-width: 699px) and (orientation:portrait) {
+  #modaltext {
+    padding: 1.5em 1.5em;
+    font-size: 1em;
+    letter-spacing: 0.1em;
+    line-height: 1em;
+  }
+
+  #eye, #x {
+    width: 30px;
+  }
+}
+
+@media only screen and (max-device-width: 600px) and (orientation:landscape)  {
+  #modaltext {
+    padding: 1.5em 1.5em;
+    font-size: 0.7em;
+    letter-spacing: 0.1em;
+    line-height: 0.8em;
+  }
+}
+
+@media only screen and (max-device-width: 350px) and (orientation:portrait)  {
+  #modaltext {
+    padding: 2em 1.5em;
+    font-size: 0.7em;
+    letter-spacing: 0.1em;
+    line-height: 1em;
+  }
+}
+  </style>
 </head>
 <body>
   <img id="eye" src="https://d1hrqqb6z8fafj.cloudfront.net/eye.svg">
@@ -14,16 +468,50 @@
   </div>
   <div id="modaltext">
     <p>
-        Cut the cheese caerphilly mascarpone. Paneer cheese triangles edam stinking bishop red leicester bavarian bergkase goat mascarpone. Smelly cheese port-salut stilton fromage cheese on toast chalk and cheese cow cheese strings. Cheese strings manchego cheesy grin.
+      <b>Man is lost and is wandering in a jungle where real values have no meaning</b>
+      <br>
+      <br>
     </p>
     <p>
-        Roquefort blue castello everyone loves. Roquefort brie danish fontina cream cheese the big cheese rubber cheese cream cheese croque monsieur. Queso squirty cheese everyone loves cheese strings squirty cheese danish fontina croque monsieur cauliflower cheese. Edam cottage cheese feta.
+      <b>a cacophony</b>
+    </p>
+    <p>
+      <b>a slow breathing</b>
+    </p>
+    <p>
+      <b>when the jungle is thick enough</b>
+    </p>
+    <p>
+      <b>even light cannot escape</b>
+    </p>
+    <p>
+      <br>
+      <br>
+      <b>The biggest jungle in this world is nothing but the human mind</b>
+      <br>
+      <br>
+    </p>
+    <p>
+      *Production credits
+      <br>
+      <br>
+      Concept and realization: <a href="http://adambasanta.com/" alt="Adam Basanta" target="blank" class="site-link">Adam Basanta</a>
+      <br>
+      <br>
+      Programming: <a href="http://conanlai.com/" alt="Conan Lai" target="blank" class="site-link">Conan Lai</a>
+      <br>
+      <br>
+      All content streamed from YouTube, and publicly available as of 2018.
+      <br>
     </p>
   </div>
   <div id="header-wrapper">
-    <h1 id="header-title">
+    <h1 id="header-title" class="bigtext">
       RELAXATION IS A JUNGLE
-    </h1>  
+    </h1>
+    <h1 id="startButton" class="bigtext">
+      START
+    </h1>
   </div>
   <img class="image" src="https://d1hrqqb6z8fafj.cloudfront.net/3.jpeg">
   <img class="image" src="https://d1hrqqb6z8fafj.cloudfront.net/1.jpeg">

@@ -145,8 +145,10 @@ function handleEyeClick() {
   eye.style.display = 'none';
   x.style.display = 'block';
   x.style.opacity = 1;
-  modal.style.opacity = 0.7;
+  modal.style.opacity = 1;
   modaltext.style.opacity = 1;
+  modaltext.style['z-index'] = 990;
+  modal.style['z-index'] = 990;
 }
 
 function handleXClick() {
@@ -156,12 +158,19 @@ function handleXClick() {
   eye.style.opacity = 1;
   modal.style.opacity = 0;
   modaltext.style.opacity = 0;
+  modaltext.style['z-index'] = 0;
+  modal.style['z-index'] = 0;
 }
 
 
-export default function initializeGraphics() {
-  eye.addEventListener('click', handleEyeClick);
-  x.addEventListener('click', handleXClick);
+eye.addEventListener('click', handleEyeClick);
+x.addEventListener('click', handleXClick);
+
+window.initializeGraphics = () => {
+
+  const start = document.querySelector('#startButton');
+  console.log(start);
+  start.style.opacity = 0;
 
   requestInterval(updateGradient, BACKGROUND_SPEED);
   requestInterval(cycleTitleOpacity, 10000);
@@ -186,7 +195,6 @@ function cycleTitleOpacity() {
     if (opacity < 0.2) {
       titleOpacityDirection = 1;
       const newOpacity = getRandomOpacity();
-      console.log(newOpacity);
       opacityCeiling = newOpacity;
       title.style.opacity = opacity + 0.15;
     } else {

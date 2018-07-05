@@ -39,13 +39,14 @@ let videosToPlay = videos;
 let videosPlayed = [];
 
 function buildVideoPath(filename) {
-  // const videoPath = 'video';
-  const videoPath = 'https://d3ngapjou6irsp.cloudfront.net';
+  const videoPath = 'video';
+  // const videoPath = 'https://d3ngapjou6irsp.cloudfront.net';
   return `${videoPath}/${filename}`;
 }
 
 function buildImagePath(filename) {
-  const imagePath = 'https://d1hrqqb6z8fafj.cloudfront.net';
+  // const imagePath = 'https://d1hrqqb6z8fafj.cloudfront.net';
+  const imagePath = 'image';
   return `${imagePath}/${filename}`;
 }
 
@@ -73,12 +74,7 @@ async function cycleVideo() {
   }, 5000);
 }
 
-function setInitialImages() {
-  // TODO:
-}
-
 function setInitialGifs(state) {
-  // TODO:
   if (!state.gifsPlaying) {
     state.gifsPlaying = true;
 
@@ -99,12 +95,14 @@ function setInitialGifs(state) {
   }
 }
 
-function fadeOutImages(state, initializeAudio) {
+function fadeOutImages(state, initializeAudio, videoSuccess) {
   if (!state.imageFadeOutInitiated) {
-    initializeAudio(state);
-    requestInterval(cycleVideo, 30000);
-    requestInterval(cycleOpacity, 5000);
     state.imageFadeOutInitiated = true;
+    initializeAudio(state);
+    if (videoSuccess) {
+      requestInterval(cycleVideo, 30000);
+      requestInterval(cycleOpacity, 5000);
+    }
     const images = document.querySelectorAll('.image');
     images.forEach((image) => {
       image.style.opacity = 0;
@@ -118,7 +116,7 @@ function fadeOutImages(state, initializeAudio) {
 function setInitialVideos(state, initializeAudio) {
   if (state.isMobile) {
     setInitialGifs(state);
-    fadeOutImages(state, initializeAudio);
+    fadeOutImages(state, initializeAudio, false);
     return;
   }
   const vids = document.querySelectorAll('.video');
@@ -126,26 +124,27 @@ function setInitialVideos(state, initializeAudio) {
     const element = vids[index];
     const videoToPlay = selectRandomVideo();
     element.src = videoToPlay;
-    element.play()
-      .then((success) => {
-        // TODO: start fading out images
-        // throw new Error();
-        // console.log('playing video success');
+
+    const playPromise = element.play();
+
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
         state.videoPlaying = true;
-        fadeOutImages(state, initializeAudio);
-      })
-      .catch((err) => {
-        // TODO: switch to GIF mode
+        console.log('promsioe fhere')
+        fadeOutImages(state, initializeAudio, true);
+      }).catch((err) => {
+        console.log(err)
         setInitialGifs(state);
-        fadeOutImages(state, initializeAudio);
+        fadeOutImages(state, initializeAudio, false);
         return null;
       });
+    } else {
+      setInitialGifs(state);
+      fadeOutImages(state, initializeAudio, false);
+    }
   }
 }
 
 export default async function initializeVideos(state, initializeAudio) {
-
-  setInitialImages();
   setInitialVideos(state, initializeAudio);
-  // TODO: handle jpg and gif fallback
 }

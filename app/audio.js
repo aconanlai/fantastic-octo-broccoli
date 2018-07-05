@@ -20,7 +20,7 @@ const AVERAGE_TIME_DELAY = Number(getParameterByName('AVERAGE_TIME_DELAY')) || 3
 const INITIAL_VOLUMES = {
   relaxation: {
     min: Number(getParameterByName('RELAXATION_MIN_VOLUME')) || 80,
-    max: Number(getParameterByName('RELAXATION_MAX_VOLUME')) || 100,
+    max: Number(getParameterByName('RELAXATION_MAX_VOLUME')) || 95,
   },
   naturesounds: {
     min: Number(getParameterByName('NATURE_MIN_VOLUME')) || 80,
@@ -28,7 +28,7 @@ const INITIAL_VOLUMES = {
   },
   meditation: {
     min: Number(getParameterByName('MEDITATION_MIN_VOLUME')) || 70,
-    max: Number(getParameterByName('MEDITATION_MAX_VOLUME')) || 90,
+    max: Number(getParameterByName('MEDITATION_MAX_VOLUME')) || 85,
   },
 };
 
@@ -98,6 +98,7 @@ async function cycleOne() {
   audio.isCycling = true;
   await fadeOutAudio(audio, RAMP_DOWN_DURATION);
   const type = loadNewAudio(audio);
+  audio.type = type;
   audio.volume(0);
   audio.play();
   const newVolume = getRandomNumBetween(
@@ -116,17 +117,16 @@ function cycleVolume() {
   for (let i = 0; i < NUMBER_OF_AUDIOS; i += 1) {
     const audio = window.audios[i];
     if (!audio.isCycling) {
-      const targetVolume = (getRandomNumBetween(3, 10) / 10);
+      const { type } = audio;
+      const maxVolume = Math.floor(INITIAL_VOLUMES[type].max / 10);
+      const targetVolume = (getRandomNumBetween(3, maxVolume) / 10);
       const currentVolume = audio.volume();
-      console.log(targetVolume);
-      console.log(currentVolume);
       audio.fade(currentVolume, targetVolume, 10000);
     }
   }
 }
 
 export default function initializeAudios(state) {
-  console.log('initializing audio');
   const { isMobile } = state;
   const { relaxation, naturesounds, meditation } = files;
   audioQueued.relaxation = [...relaxation];
@@ -135,8 +135,8 @@ export default function initializeAudios(state) {
 
   let initialLoaded = [];
 
-  const firstRandomNum = getRandomNumBetween(4, 8);
-  const secondRandomNum = getRandomNumBetween(4, 7);
+  const firstRandomNum = getRandomNumBetween(4, 7);
+  const secondRandomNum = getRandomNumBetween(6, 9);
   const thirdRandomNum = 18 - secondRandomNum - firstRandomNum;
 
   for (let i = 0; i < firstRandomNum; i += 1) {
@@ -175,20 +175,7 @@ export default function initializeAudios(state) {
   }
 
   for (let i = 0; i < NUMBER_OF_AUDIOS; i += 1) {
-    // const newAudio = document.createElement('audio');
-    // newAudio.id = `audio${i}`;
-    // window.audios.push(newAudio);
     const audioToLoad = initialLoaded[i];
-    // const volume = (getRandomNumBetween(
-    //   INITIAL_VOLUMES[audioToLoad.type].min,
-    //   INITIAL_VOLUMES[audioToLoad.type].max,
-    // ) / 100);
-    // newAudio.volume = volume;
-    // newAudio.src = buildFilepath(audioToLoad.type, audioToLoad.filename);
-    // newAudio.preload = 'true';
-    // targetDiv.appendChild(newAudio);
-    // newAudio.play();
-    // fadeInAudio(newAudio, RAMP_UP_DURATION, volume);
 
     const src = buildFilepath(audioToLoad.type, audioToLoad.filename);
     const sound = new Howl({
@@ -196,18 +183,34 @@ export default function initializeAudios(state) {
       loop: true,
       html5: true,
     });
+    sound.type = audioToLoad.type;
     window.audios.push(sound);
   }
-  if (!isMobile) {
+  // if (!isMobile) {
+  //   playAll();
+  //   setTimeout(cycleOne, 30000);
+  // } else {
+  //   document.addEventListener('click', () => {
+  //     if (!state.isMobileAudioPlaying) {
+  //       playAll();
+  //       state.isMobileAudioPlaying = true;
+  //     }
+  //   });
+  // }
+  // requestInterval(cycleVolume, 10000);
+
+
+  console.log('intialazing audio')
+  const start = document.querySelector('#startButton');
+  start.style.opacity = 0.8;
+  document.querySelector('#startButton').addEventListener('click', () => {
+    window.initializeGraphics();
     playAll();
-    setTimeout(cycleOne, 30000);
-  } else {
-    document.addEventListener('click', () => {
-      if (!state.isMobileAudioPlaying) {
-        playAll();
-        state.isMobileAudioPlaying = true;
-      }
-    });
-  }
-  requestInterval(cycleVolume, 10000);
+    if (!isMobile) {
+      setTimeout(cycleOne, 30000);
+    } else {
+      state.isMobileAudioPlaying = true;
+    }
+    requestInterval(cycleVolume, 10000);
+  });
 }

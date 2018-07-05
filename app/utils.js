@@ -96,31 +96,14 @@ export function fadeOutAudio(player, duration) {
   const realDuration = duration * 1000;
   return new Promise((resolve) => {
     const vol = player.volume();
-    console.log(duration);
-    console.log(vol);
     player.fade(vol, 0, realDuration);
     setTimeout(() => {
       resolve();
     }, realDuration);
   });
-  // return new Promise((resolve) => {
-  //   const { volume } = player;
-  //   const toLowerIncrement = Math.floor(volume / duration);
-  //   let incremented = 0;
-  //   const timer = setInterval(() => {
-  //     // lowerVolume(player, toLowerIncrement);
-  //     player.volume = volume - toLowerIncrement;
-  //     incremented += 1;
-  //     if (incremented > duration) {
-  //       clearInterval(timer);
-  //       resolve();
-  //     }
-  //   }, 1000);
-  // });
 }
 
 export function fadeInAudio(player, duration, volume) {
-  console.log('fading in');
   const realDuration = duration * 1000;
   return new Promise((resolve) => {
     player.fade(0, volume, realDuration);
@@ -128,19 +111,6 @@ export function fadeInAudio(player, duration, volume) {
       resolve();
     }, realDuration);
   });
-
-  // return new Promise((resolve) => {
-  //   const toRaiseIncrement = Math.floor(volume / duration);
-  //   let incremented = 0;
-  //   const timer = setInterval(() => {
-  //     player.volume = volume - toRaiseIncrement;
-  //     incremented += 1;
-  //     if (incremented > duration) {
-  //       clearInterval(timer);
-  //       resolve();
-  //     }
-  //   }, 1000);
-  // });
 }
 
 const opacities = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];

@@ -1,11 +1,11 @@
 import initializeAudios from './audio';
-import initializeGraphics from './graphics';
+import './graphics';
 // import initializeYoutube from './youtube';
 import initializeState from './state';
 import initializeVideo from './video';
 
 const state = initializeState();
 
-initializeGraphics();
+// initializeGraphics();
 initializeVideo(state, initializeAudios);
 // initializeYoutube();
