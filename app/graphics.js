@@ -169,12 +169,20 @@ x.addEventListener('click', handleXClick);
 window.initializeGraphics = () => {
 
   const start = document.querySelector('#startButton');
+  const startWrapper = document.querySelectorAll('.start-wrapper')[0];
   console.log(start);
+  startWrapper.style.opacity = 0;
+  start.style.transition = 'all 10s';
   start.style.opacity = 0;
+
+  setTimeout(() => {
+    start.style.display = 'none';
+    startWrapper.style.display = 'none';
+  }, 10000);
 
   requestInterval(updateGradient, BACKGROUND_SPEED);
   requestInterval(cycleTitleOpacity, 10000);
-}
+};
 
 let titleOpacityDirection = 1;
 let opacityCeiling = 0.75;

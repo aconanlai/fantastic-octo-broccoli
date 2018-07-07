@@ -132,7 +132,7 @@ body {
   position: relative;
 }
 
-#header-wrapper {
+.header-wrapper {
   position: fixed;
   z-index: 960;
   width: 100vw;
@@ -145,7 +145,6 @@ body {
 }
 
 #header-title {
-  position: relative;
   opacity: 0;
   transition: opacity 2s;
   background-image: linear-gradient(rgb(100,231,151), rgb(236, 78, 31));
@@ -164,16 +163,23 @@ body {
   text-align: center;
   width: 100%;
   display: block;
-  position: absolute;
+  position: relative;
+}
+
+.start-wrapper {
+  background: white;
+  transition: all 10s;
 }
 
 #startButton {
+  color: #3987c9;
   cursor: pointer;
-  transition: opacity 1s;
+  transition: all 1s;
+  opacity: 0;
 }
 
 #startButton:hover {
-  text-shadow: 2px 2px #ff0000;
+  text-shadow: 2px 2px 5px #1863a3;
 }
 
 @-moz-document url-prefix() {
@@ -505,10 +511,12 @@ body {
       <br>
     </p>
   </div>
-  <div id="header-wrapper">
+  <div class="header-wrapper">
     <h1 id="header-title" class="bigtext">
       RELAXATION IS A JUNGLE
     </h1>
+  </div>
+  <div class="header-wrapper start-wrapper">
     <h1 id="startButton" class="bigtext">
       START
     </h1>

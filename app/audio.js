@@ -170,6 +170,7 @@ export default function initializeAudios(state) {
 
   function playAll() {
     for (let i = 0; i < NUMBER_OF_AUDIOS; i += 1) {
+      window.audios[i].fade(0, 0.8, 10000);
       window.audios[i].play();
     }
   }
@@ -186,24 +187,13 @@ export default function initializeAudios(state) {
     sound.type = audioToLoad.type;
     window.audios.push(sound);
   }
-  // if (!isMobile) {
-  //   playAll();
-  //   setTimeout(cycleOne, 30000);
-  // } else {
-  //   document.addEventListener('click', () => {
-  //     if (!state.isMobileAudioPlaying) {
-  //       playAll();
-  //       state.isMobileAudioPlaying = true;
-  //     }
-  //   });
-  // }
-  // requestInterval(cycleVolume, 10000);
-
 
   console.log('intialazing audio')
   const start = document.querySelector('#startButton');
   start.style.opacity = 0.8;
-  document.querySelector('#startButton').addEventListener('click', () => {
+
+  const startHandler = () => {
+    document.querySelector('#startButton').removeEventListener('click', startHandler);
     window.initializeGraphics();
     playAll();
     if (!isMobile) {
@@ -211,6 +201,9 @@ export default function initializeAudios(state) {
     } else {
       state.isMobileAudioPlaying = true;
     }
-    requestInterval(cycleVolume, 10000);
-  });
+    setTimeout(() => {
+      requestInterval(cycleVolume, 10000);
+    }, 10000);
+  };
+  document.querySelector('#startButton').addEventListener('click', startHandler);
 }
