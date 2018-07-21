@@ -32,7 +32,7 @@ const INITIAL_VOLUMES = {
   },
 };
 
-const NUMBER_OF_AUDIOS = Number(getParameterByName('RAMP_DOWN_DURATION')) || 18;
+const NUMBER_OF_AUDIOS = Number(getParameterByName('RAMP_DOWN_DURATION')) || 13;
 
 window.audios = [];
 
@@ -84,6 +84,7 @@ function loadNewAudio(audio) {
   const src = buildFilepath(category, newAudio);
   audio.unload();
   audio = new Howl({
+    preload: true,
     src,
     loop: true,
     html5: true,
@@ -135,9 +136,9 @@ export default function initializeAudios(state) {
 
   let initialLoaded = [];
 
-  const firstRandomNum = getRandomNumBetween(4, 7);
-  const secondRandomNum = getRandomNumBetween(6, 9);
-  const thirdRandomNum = 18 - secondRandomNum - firstRandomNum;
+  const firstRandomNum = getRandomNumBetween(5, 6);
+  const secondRandomNum = getRandomNumBetween(5, 6);
+  const thirdRandomNum = Math.max(13 - secondRandomNum - firstRandomNum, 0);
 
   for (let i = 0; i < firstRandomNum; i += 1) {
     const selected = removeRandomFromArray(relaxation);
@@ -180,6 +181,7 @@ export default function initializeAudios(state) {
 
     const src = buildFilepath(audioToLoad.type, audioToLoad.filename);
     const sound = new Howl({
+      preload: true,
       src,
       loop: true,
       html5: true,

@@ -158,8 +158,10 @@ function handleXClick() {
   eye.style.opacity = 1;
   modal.style.opacity = 0;
   modaltext.style.opacity = 0;
-  modaltext.style['z-index'] = 0;
-  modal.style['z-index'] = 0;
+  setTimeout(() => {
+    modaltext.style['z-index'] = 0;
+    modal.style['z-index'] = 0;
+  }, 1000);
 }
 
 

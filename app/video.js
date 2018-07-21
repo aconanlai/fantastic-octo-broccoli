@@ -126,11 +126,11 @@ function setInitialVideos(state, initializeAudio) {
     element.src = videoToPlay;
 
     const playPromise = element.play();
-
     if (playPromise !== undefined) {
       playPromise.then(() => {
         state.videoPlaying = true;
-        console.log('promsioe fhere')
+        // console.log('promsioe fhere')
+        // throw new Error();
         fadeOutImages(state, initializeAudio, true);
       }).catch((err) => {
         console.log(err)

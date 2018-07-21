@@ -6,6 +6,8 @@ import initializeVideo from './video';
 
 const state = initializeState();
 
+window.Howler.mobileAutoEnable = false;
+
 // initializeGraphics();
 initializeVideo(state, initializeAudios);
 // initializeYoutube();

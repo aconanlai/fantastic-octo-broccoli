@@ -23,6 +23,7 @@
     "imports-loader": "^0.7.1",
     "phonograph": "^1.5.1",
     "webpack": "^2.7.0",
+    "weinre": "^2.0.0-pre-I0Z7U9OV",
     "whatwg-fetch": "^2.0.1"
   },
   "devDependencies": {
