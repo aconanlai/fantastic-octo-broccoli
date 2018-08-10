@@ -66,6 +66,23 @@ body {
   cursor: pointer;
 }
 
+#fullscreenbutton {
+  opacity: 0;
+  bottom: 0;
+  right: 0;
+  position: fixed;
+  margin: 1px 8px;
+  width: 50px;
+  z-index: 998;
+  transition: opacity 1s;
+  cursor: pointer;
+}
+
+#fullscreenbutton:hover {
+  -webkit-filter: drop-shadow( 1px 1px 1px #000 ); 
+  filter: drop-shadow( 1px 1px 1px #000 );
+}
+
 #eye:hover {
   -webkit-filter: drop-shadow( 1px 1px 1px #000 ); 
   filter: drop-shadow( 1px 1px 1px #000 );
@@ -104,6 +121,16 @@ body {
   transition: opacity 1s;
 }
 
+#best-viewed-text {
+  display: none;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  position: absolute;
+  bottom: 0;
+  margin: 1em;
+  font-size: 0.8em;
+}
+
 #modaltext p {
   margin-bottom: 1em;
 }
@@ -140,6 +167,7 @@ body {
   top: 0;
   left: 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -166,20 +194,40 @@ body {
   position: relative;
 }
 
+.mediumtext {
+  color: white;
+  z-index: 996;
+  font-family: "Arial Bold", Gadget, sans-serif;
+  -webkit-transform: scale(1, 5);
+  transform: scale(1, 5);
+  font-size: 3.7vw;
+  letter-spacing: 0.2em;
+  text-align: center;
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
 .start-wrapper {
   background: white;
-  transition: all 10s;
+  transition: opacity 10s;
 }
 
 #startButton {
-  color: #3987c9;
+  display: none;
+  color: black;
+  font-size: 4vw;
   cursor: pointer;
-  transition: all 1s;
+  transition: opacity 1s;
   opacity: 0;
 }
 
+#mobileText {
+  display: none;
+}
+
 #startButton:hover {
-  text-shadow: 2px 2px 5px #1863a3;
+  text-shadow: 2px 2px 5px grey;
 }
 
 @-moz-document url-prefix() {
@@ -187,7 +235,6 @@ body {
     line-height: 100vh;
   }
 }
-
 
 .site-link {
   color: black;
@@ -222,6 +269,11 @@ body {
   opacity: 0;
   z-index: 98;
   transition: opacity 10s;
+}
+
+#production-credits {
+  font-size: 0.8em;
+  line-height: 1.1em;
 }
 
 @-webkit-keyframes color-change {
@@ -347,6 +399,13 @@ body {
   #title {
     font-size: 1em;
   }
+  #best-viewed-text {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.6em;
+    position: absolute;
+    bottom: 60px;
+    margin: 1em;
+  }
 }
 
 @media (min-aspect-ratio: 8/4) {
@@ -430,7 +489,7 @@ body {
     line-height: 0.85em;
   }
 
-  #eye, #x {
+  #eye, #x, #fullscreenbutton {
     width: 30px;
   }
 }
@@ -470,10 +529,14 @@ body {
 <body>
   <img id="eye" src="https://d1hrqqb6z8fafj.cloudfront.net/eye.svg">
   <img id="x" src="https://d1hrqqb6z8fafj.cloudfront.net/x.svg">
+  <img id="fullscreenbutton" src="image/fullscreen.svg">
   <div id="modal">
   </div>
   <div id="modaltext">
     <p>
+      <br>
+      <br>
+      <br>
       <b>Man is lost and is wandering in a jungle where real values have no meaning</b>
       <br>
       <br>
@@ -496,8 +559,10 @@ body {
       <b>The biggest jungle in this world is nothing but the human mind</b>
       <br>
       <br>
+      <br>
+      <br>
     </p>
-    <p>
+    <p id="production-credits">
       *Production credits
       <br>
       <br>
@@ -515,11 +580,23 @@ body {
     <h1 id="header-title" class="bigtext">
       RELAXATION IS A JUNGLE
     </h1>
+    <h2 id="mobileText" class="mediumtext">
+      RELAXATIONISAJUNGLE.COM
+      <br>
+      IS A DESKTOP ONLY EXPERIENCE
+    </h2>
   </div>
-  <div class="header-wrapper start-wrapper">
+  <div class="header-wrapper start-wrapper" id="intro-wrapper">
     <h1 id="startButton" class="bigtext">
       START
     </h1>
+    <div id="best-viewed-text">
+        Best experienced with
+        <br><br>
+        Chrome (2017 and later)<br>
+        High speed internet connection <br>
+        Headphones or a decent sound system
+    </div>
   </div>
   <img class="image" src="https://d1hrqqb6z8fafj.cloudfront.net/3.jpeg">
   <img class="image" src="https://d1hrqqb6z8fafj.cloudfront.net/1.jpeg">

@@ -8,13 +8,6 @@ import {
 const TITLE_DURATION = Number(getParameterByName('TITLE_DURATION')) || 600;
 const BACKGROUND_SPEED = Number(getParameterByName('BACKGROUND_SPEED')) || 60;
 
-// const playButton = document.querySelector('#playButton');
-// playButton.addEventListener('click', () => {
-//   for (let i = 0; i < NUMBER_OF_VIDS; i += 1) {
-//     window.players[i].playVideo();
-//   }
-// });
-
 // gradient
 
 const colors = shuffle([
@@ -70,10 +63,6 @@ let titleColorIndices = [0, 1, 2, 3];
 let titleGradientSpeed = 0.002;
 
 function updateGradient() {
-  // const c0_0 = colors[colorIndices[0]];
-  // const c0_1 = colors[colorIndices[1]];
-  // const c1_0 = colors[colorIndices[2]];
-  // const c1_1 = colors[colorIndices[3]];
 
   const t0_0 = titleColors[titleColorIndices[0]];
   const t0_1 = titleColors[titleColorIndices[1]];
@@ -81,15 +70,6 @@ function updateGradient() {
   const t1_1 = titleColors[titleColorIndices[3]];
 
   const istep = 1 - step;
-  // const r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
-  // const g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
-  // const b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
-  // const color1 = `rgb(${r1}, ${g1}, ${b1})`;
-
-  // const r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
-  // const g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
-  // const b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
-  // const color2 = `rgb(${r2}, ${g2}, ${b2})`;
 
   const title_r1 = Math.round(istep * t0_0[0] + step * t0_1[0]);
   const title_g1 = Math.round(istep * t0_0[1] + step * t0_1[1]);
@@ -101,29 +81,14 @@ function updateGradient() {
   const title_b2 = Math.round(istep * t1_0[2] + step * t1_1[2]);
   const title_color2 = `rgb(${title_r2}, ${title_g2}, ${title_b2})`;
 
-  // document.body.style.background = `linear-gradient(${color1}, ${color2})`;
   const headerTitle = document.querySelector('#header-title');
   headerTitle.style['background-image'] = `linear-gradient(${title_color1}, ${title_color2})`;
   step += gradientSpeed;
   if (step >= 1) {
     step %= 1;
 
-
-
-
-    // colorIndices[0] = colorIndices[1]; // eslint-disable-line
-    // colorIndices[2] = colorIndices[3]; // eslint-disable-line
-
-    // // pick two new target color indices
-    // // do not pick the same as the current one
-    // colorIndices[1] = (colorIndices[1] + Math.floor((1 + Math.random()) * (colors.length - 1)))
-    //   % colors.length;
-    // colorIndices[3] = (colorIndices[3] + Math.floor((1 + Math.random()) * (colors.length - 1)))
-    //   % colors.length;
-
-
-      titleColorIndices[0] = titleColorIndices[1]; // eslint-disable-line
-      titleColorIndices[2] = titleColorIndices[3]; // eslint-disable-line
+    titleColorIndices[0] = titleColorIndices[1]; // eslint-disable-line
+    titleColorIndices[2] = titleColorIndices[3]; // eslint-disable-line
 
     // pick two new target color indices
     // do not pick the same as the current one
@@ -139,6 +104,7 @@ const eye = document.querySelector('#eye');
 const x = document.querySelector('#x');
 const modal = document.querySelector('#modal');
 const modaltext = document.querySelector('#modaltext');
+const fullscreenbutton = document.querySelector('#fullscreenbutton');
 
 function handleEyeClick() {
   eye.style.opacity = 0;
@@ -158,23 +124,46 @@ function handleXClick() {
   eye.style.opacity = 1;
   modal.style.opacity = 0;
   modaltext.style.opacity = 0;
-  modaltext.style['z-index'] = 0;
-  modal.style['z-index'] = 0;
+  setTimeout(() => {
+    modaltext.style['z-index'] = 0;
+    modal.style['z-index'] = 0;
+  }, 1000);
 }
 
+function exitHandler() {
+  fullscreenbutton.style.opacity = fullscreenbutton.style.opacity === '1' ? 0 : 1;
+}
+
+document.addEventListener('webkitfullscreenchange', exitHandler, false);
+document.addEventListener('mozfullscreenchange', exitHandler, false);
+document.addEventListener('fullscreenchange', exitHandler, false);
+document.addEventListener('MSFullscreenChange', exitHandler, false);
+
+function handleFullscreenClick() {
+  const body = document.querySelector('body');
+  if (body.requestFullscreen) {
+    body.requestFullscreen();
+  } else if (body.mozRequestFullScreen) { /* Firefox */
+    body.mozRequestFullScreen();
+  } else if (body.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+    body.webkitRequestFullscreen();
+  } else if (body.msRequestFullscreen) { /* IE/Edge */
+    body.msRequestFullscreen();
+  }
+}
 
 eye.addEventListener('click', handleEyeClick);
 x.addEventListener('click', handleXClick);
+fullscreenbutton.addEventListener('click', handleFullscreenClick);
 
 window.initializeGraphics = () => {
 
   const start = document.querySelector('#startButton');
   const startWrapper = document.querySelectorAll('.start-wrapper')[0];
-  console.log(start);
   startWrapper.style.opacity = 0;
   start.style.transition = 'all 10s';
   start.style.opacity = 0;
-
+  fullscreenbutton.style.opacity = 1;
   setTimeout(() => {
     start.style.display = 'none';
     startWrapper.style.display = 'none';
@@ -199,7 +188,7 @@ function cycleTitleOpacity() {
   }
 
   if (titleOpacityDirection === 0) {
-  // opacity going down
+    // opacity going down
     if (opacity < 0.2) {
       titleOpacityDirection = 1;
       const newOpacity = getRandomOpacity();

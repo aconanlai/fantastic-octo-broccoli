@@ -1,4 +1,4 @@
-import { Howl } from 'howler';
+import AudioPlayer from './audioPlayer';
 import {
   getParameterByName,
   getRandomNum,
@@ -15,7 +15,6 @@ import files from './files.json';
 
 const RAMP_DOWN_DURATION = Number(getParameterByName('RAMP_DOWN_DURATION')) || 10;
 const RAMP_UP_DURATION = Number(getParameterByName('RAMP_UP_DURATION')) || 10;
-// const INITIAL_VOLUME_FLOOR = Number(getParameterByName('INITIAL_VOLUME_FLOOR')) || 60;
 const AVERAGE_TIME_DELAY = Number(getParameterByName('AVERAGE_TIME_DELAY')) || 30; // 150
 const INITIAL_VOLUMES = {
   relaxation: {
@@ -62,7 +61,6 @@ function resetAudio() {
 }
 
 function buildFilepath(type, filename) {
-  // return `audio/${type}/${filename}`;
   return filename;
 }
 
@@ -82,21 +80,12 @@ function loadNewAudio(audio) {
   const category = findAvailableAudioType();
   const newAudio = removeRandomFromArray(audioQueued[category]);
   const src = buildFilepath(category, newAudio);
-  audio.unload();
-  audio = new Howl({
-    src,
-    loop: true,
-    html5: true,
-  }).play();
+  audio.changeSrc(src);
   audioPlayed[category].push(newAudio);
   return category;
 }
 
-async function cycleOne() {
-  const random = getRandomNum(window.audios.length);
-  const audio = window.audios[random];
-  audio.isCycling = true;
-  await fadeOutAudio(audio, RAMP_DOWN_DURATION);
+async function loadAndFadeInNewAudio(audio) {
   const type = loadNewAudio(audio);
   audio.type = type;
   audio.volume(0);
@@ -105,7 +94,15 @@ async function cycleOne() {
     INITIAL_VOLUMES[type].min,
     INITIAL_VOLUMES[type].max,
   ) / 100;
-  await fadeInAudio(audio, RAMP_UP_DURATION, newVolume);
+  await audio.fadeIn(newVolume, RAMP_UP_DURATION * 1000);
+}
+
+async function cycleOne() {
+  const random = getRandomNum(window.audios.length);
+  const audio = window.audios[random];
+  audio.isCycling = true;
+  await audio.fadeOut(RAMP_DOWN_DURATION * 1000);
+  await loadAndFadeInNewAudio(audio);
   setTimeout(() => {
     audio.isCycling = false;
   }, RAMP_UP_DURATION * 1000);
@@ -120,7 +117,7 @@ function cycleVolume() {
       const { type } = audio;
       const maxVolume = Math.floor(INITIAL_VOLUMES[type].max / 10);
       const targetVolume = (getRandomNumBetween(3, maxVolume) / 10);
-      const currentVolume = audio.volume();
+      const currentVolume = audio.getVolume();
       audio.fade(currentVolume, targetVolume, 10000);
     }
   }
@@ -179,16 +176,11 @@ export default function initializeAudios(state) {
     const audioToLoad = initialLoaded[i];
 
     const src = buildFilepath(audioToLoad.type, audioToLoad.filename);
-    const sound = new Howl({
-      src,
-      loop: true,
-      html5: true,
-    });
+    const sound = new AudioPlayer(src, loadAndFadeInNewAudio);
     sound.type = audioToLoad.type;
     window.audios.push(sound);
   }
 
-  console.log('intialazing audio')
   const start = document.querySelector('#startButton');
   start.style.opacity = 0.8;
 
@@ -196,11 +188,7 @@ export default function initializeAudios(state) {
     document.querySelector('#startButton').removeEventListener('click', startHandler);
     window.initializeGraphics();
     playAll();
-    if (!isMobile) {
-      setTimeout(cycleOne, 30000);
-    } else {
-      state.isMobileAudioPlaying = true;
-    }
+    setTimeout(cycleOne, 30000);
     setTimeout(() => {
       requestInterval(cycleVolume, 10000);
     }, 10000);

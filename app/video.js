@@ -98,7 +98,9 @@ function setInitialGifs(state) {
 function fadeOutImages(state, initializeAudio, videoSuccess) {
   if (!state.imageFadeOutInitiated) {
     state.imageFadeOutInitiated = true;
-    initializeAudio(state);
+    if (!state.isMobile) {
+      initializeAudio(state);
+    }
     if (videoSuccess) {
       requestInterval(cycleVideo, 30000);
       requestInterval(cycleOpacity, 5000);
@@ -130,10 +132,8 @@ function setInitialVideos(state, initializeAudio) {
     if (playPromise !== undefined) {
       playPromise.then(() => {
         state.videoPlaying = true;
-        console.log('promsioe fhere')
         fadeOutImages(state, initializeAudio, true);
       }).catch((err) => {
-        console.log(err)
         setInitialGifs(state);
         fadeOutImages(state, initializeAudio, false);
         return null;
