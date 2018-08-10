@@ -4,7 +4,6 @@ export default class AudioPlayer {
     this.audio.volume = 0;
     this.loadAndFadeInNewAudio = loadAndFadeInNewAudio;
     this.audio.addEventListener('ended', () => {
-      console.log(`video with id ${this.audio.src} ended, instantiating new`)
       loadAndFadeInNewAudio(this);
     });
   }
@@ -26,7 +25,6 @@ export default class AudioPlayer {
         }
         seconds -= 1;
         if (seconds < 1) {
-          console.log(`fade complete after ${ms} millisseconds`);
           clearInterval(interval);
           resolve();
         }
